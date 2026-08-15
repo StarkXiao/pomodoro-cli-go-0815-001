@@ -101,3 +101,14 @@ func TestBuildReportsWithFixedZoneSessionTimes(t *testing.T) {
 		t.Fatalf("expected 1 weekly session, got %d", weekly.TotalSessions)
 	}
 }
+
+func TestBuildWeeklyReportUsesMondayAsWeekStart(t *testing.T) {
+	loc := time.UTC
+	weekly := BuildWeeklyReport(nil, time.Date(2026, 8, 15, 0, 0, 0, 0, loc), loc)
+	if weekly.WeekStart != "2026-08-10" {
+		t.Fatalf("expected week start 2026-08-10, got %s", weekly.WeekStart)
+	}
+	if weekly.WeekEnd != "2026-08-16" {
+		t.Fatalf("expected week end 2026-08-16, got %s", weekly.WeekEnd)
+	}
+}

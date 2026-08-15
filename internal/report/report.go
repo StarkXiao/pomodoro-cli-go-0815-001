@@ -145,7 +145,7 @@ func normalizeDate(value time.Time) time.Time {
 
 func startOfWeek(value time.Time) time.Time {
 	current := normalizeDate(value)
-	offset := (int(current.Weekday()) + 6) % 7
+	offset := int(current.Weekday())
 	return current.AddDate(0, 0, -offset)
 }
 
