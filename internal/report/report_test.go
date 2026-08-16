@@ -41,6 +41,44 @@ func TestBuildDailySummary(t *testing.T) {
 	}
 }
 
+func TestBuildDailySummaryDeduplicatesTasks(t *testing.T) {
+	loc := time.UTC
+	records := []pomodoro.SessionRecord{
+		{
+			ID:           "1",
+			TaskName:     "Write docs",
+			StartTime:    time.Date(2026, 8, 15, 9, 0, 0, 0, loc),
+			EndTime:      time.Date(2026, 8, 15, 9, 25, 0, 0, loc),
+			PlannedFocus: 25 * time.Minute,
+			Status:       pomodoro.StatusCompleted,
+		},
+		{
+			ID:           "2",
+			TaskName:     "Write docs",
+			StartTime:    time.Date(2026, 8, 15, 10, 0, 0, 0, loc),
+			EndTime:      time.Date(2026, 8, 15, 10, 25, 0, 0, loc),
+			PlannedFocus: 25 * time.Minute,
+			Status:       pomodoro.StatusInterrupted,
+		},
+		{
+			ID:           "3",
+			TaskName:     "Review logs",
+			StartTime:    time.Date(2026, 8, 15, 11, 0, 0, 0, loc),
+			EndTime:      time.Date(2026, 8, 15, 11, 25, 0, 0, loc),
+			PlannedFocus: 25 * time.Minute,
+			Status:       pomodoro.StatusCompleted,
+		},
+	}
+
+	summary := BuildDailySummary(records, time.Date(2026, 8, 15, 0, 0, 0, 0, loc), loc)
+	if len(summary.Tasks) != 2 {
+		t.Fatalf("expected 2 unique tasks, got %d", len(summary.Tasks))
+	}
+	if summary.Tasks[0] != "Review logs" || summary.Tasks[1] != "Write docs" {
+		t.Fatalf("expected sorted unique tasks, got %v", summary.Tasks)
+	}
+}
+
 func TestBuildWeeklyReport(t *testing.T) {
 	loc := time.UTC
 	records := []pomodoro.SessionRecord{
