@@ -101,3 +101,36 @@ func TestBuildReportsWithFixedZoneSessionTimes(t *testing.T) {
 		t.Fatalf("expected 1 weekly session, got %d", weekly.TotalSessions)
 	}
 }
+
+func TestBuildReportsUseSessionStartDateForCrossMidnightSessions(t *testing.T) {
+	loc := time.UTC
+	records := []pomodoro.SessionRecord{
+		{
+			ID:           "1",
+			TaskName:     "Late shift",
+			StartTime:    time.Date(2026, 8, 15, 23, 50, 0, 0, loc),
+			EndTime:      time.Date(2026, 8, 16, 0, 10, 0, 0, loc),
+			PlannedFocus: 20 * time.Minute,
+			Status:       pomodoro.StatusCompleted,
+		},
+	}
+
+	summary := BuildDailySummary(records, time.Date(2026, 8, 15, 0, 0, 0, 0, loc), loc)
+	if summary.TotalSessions != 1 {
+		t.Fatalf("expected 1 daily session on the start date, got %d", summary.TotalSessions)
+	}
+	if summary.CompletedSessions != 1 {
+		t.Fatalf("expected 1 completed session on the start date, got %d", summary.CompletedSessions)
+	}
+
+	weekly := BuildWeeklyReport(records, time.Date(2026, 8, 15, 0, 0, 0, 0, loc), loc)
+	if weekly.TotalSessions != 1 {
+		t.Fatalf("expected 1 weekly session on the start date, got %d", weekly.TotalSessions)
+	}
+	if weekly.Days[5].CompletedSessions != 1 {
+		t.Fatalf("expected 1 completed session on 2026-08-15, got %d", weekly.Days[5].CompletedSessions)
+	}
+	if weekly.Days[6].CompletedSessions != 0 {
+		t.Fatalf("expected 0 completed sessions on 2026-08-16, got %d", weekly.Days[6].CompletedSessions)
+	}
+}

@@ -45,8 +45,8 @@ func BuildDailySummary(records []pomodoro.SessionRecord, day time.Time, loc *tim
 	summary := DailySummary{Date: target.Format("2006-01-02")}
 
 	for _, record := range records {
-		start := record.StartTime.In(loc)
-		if dateKey(start) != targetKey {
+		end := record.EndTime.In(loc)
+		if dateKey(end) != targetKey {
 			continue
 		}
 		summary.TotalSessions++
@@ -87,8 +87,8 @@ func BuildWeeklyReport(records []pomodoro.SessionRecord, day time.Time, loc *tim
 	}
 
 	for _, record := range records {
-		start := record.StartTime.In(loc)
-		index, ok := dayIndexByKey[dateKey(start)]
+		end := record.EndTime.In(loc)
+		index, ok := dayIndexByKey[dateKey(end)]
 		if !ok {
 			continue
 		}
