@@ -51,10 +51,10 @@ func BuildDailySummary(records []pomodoro.SessionRecord, day time.Time, loc *tim
 		}
 		summary.TotalSessions++
 		taskSet[record.TaskName] = struct{}{}
-		summary.CompletedFocus += record.PlannedFocus
 		switch record.Status {
 		case pomodoro.StatusCompleted:
 			summary.CompletedSessions++
+			summary.CompletedFocus += record.PlannedFocus
 		case pomodoro.StatusInterrupted:
 			summary.InterruptedSessions++
 		}
