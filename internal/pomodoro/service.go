@@ -63,7 +63,7 @@ func (s Service) RunFocus(ctx context.Context, out io.Writer, runtime RuntimeSta
 
 	record.Status = StatusCompleted
 	runtime.CompletedFocusSinceLongBreak++
-	if runtime.CompletedFocusSinceLongBreak >= cfg.LongBreakEvery {
+	if runtime.CompletedFocusSinceLongBreak > cfg.LongBreakEvery {
 		record.NextBreak = BreakLong
 		runtime.CompletedFocusSinceLongBreak = 0
 	} else {
