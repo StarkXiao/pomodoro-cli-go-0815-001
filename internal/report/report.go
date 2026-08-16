@@ -41,6 +41,7 @@ func BuildDailySummary(records []pomodoro.SessionRecord, day time.Time, loc *tim
 	}
 	target := normalizeDate(day.In(loc))
 	targetKey := dateKey(target)
+	taskSet := map[string]struct{}{}
 	summary := DailySummary{Date: target.Format("2006-01-02")}
 
 	for _, record := range records {
@@ -49,7 +50,7 @@ func BuildDailySummary(records []pomodoro.SessionRecord, day time.Time, loc *tim
 			continue
 		}
 		summary.TotalSessions++
-		summary.Tasks = append(summary.Tasks, record.TaskName)
+		taskSet[record.TaskName] = struct{}{}
 		switch record.Status {
 		case pomodoro.StatusCompleted:
 			summary.CompletedSessions++
@@ -59,6 +60,9 @@ func BuildDailySummary(records []pomodoro.SessionRecord, day time.Time, loc *tim
 		}
 	}
 
+	for task := range taskSet {
+		summary.Tasks = append(summary.Tasks, task)
+	}
 	sort.Strings(summary.Tasks)
 	return summary
 }
